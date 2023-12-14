@@ -1,0 +1,279 @@
+MariaDB [(none)]> USE company_b;
+Database changed
+MariaDB [company_b]> CREATE TABLE employee ( 
+    -> emp_id INT PRIMARY KEY
+    -> , first_name VARCHAR(40),
+    -> lastname VARCHAR(40),
+    -> dob DATE,
+    -> sex VARCHAR(1),
+    -> salary INT,
+    -> supervisor_id INT,
+    -> branch_id INT);
+Query OK, 0 rows affected (0.057 sec)
+
+MariaDB [company_b]> CREATE TABLE branch ( 
+    -> branch_id INT PRIMARY KEY,
+    -> branch_name VARCHAR(255),
+    -> mgr_id INT,
+    -> mgr_start_date DATE,
+    -> FOREIGN KEY(mgr_id) REFERENCES employee(emp_id) ON DELETE SET NULL
+    -> );
+Query OK, 0 rows affected (0.023 sec)
+
+MariaDB [company_b]> ALTER TABLE employee;
+Query OK, 0 rows affected (0.006 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [company_b]> ALTER TABLE employee
+    -> ADD FOREIGN KEY (branch_id) REFERENCES branch(branch_id) ON DELETE SET NULL;
+Query OK, 0 rows affected (0.041 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [company_b]> DESCRIBE employee
+    -> ;
++---------------+-------------+------+-----+---------+-------+
+| Field         | Type        | Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| emp_id        | int(11)     | NO   | PRI | NULL    |       |
+| first_name    | varchar(40) | YES  |     | NULL    |       |
+| lastname      | varchar(40) | YES  |     | NULL    |       |
+| dob           | date        | YES  |     | NULL    |       |
+| sex           | varchar(1)  | YES  |     | NULL    |       |
+| salary        | int(11)     | YES  |     | NULL    |       |
+| supervisor_id | int(11)     | YES  |     | NULL    |       |
+| branch_id     | int(11)     | YES  | MUL | NULL    |       |
++---------------+-------------+------+-----+---------+-------+
+8 rows in set (0.013 sec)
+
+MariaDB [company_b]> CREATE TABLE client ( 
+    -> client_id INT PRIMARY KEY,
+    -> client_name VARCHAR (40),
+    -> branch_id INT,
+    -> FOREIGN KEY (branch_id) REFERENCES branch (branch_id) on DELETE SET NULL
+    -> );
+Query OK, 0 rows affected (0.017 sec)
+
+MariaDB [company_b]> CREATE TABLE works_with (
+    -> emp_id INT
+    -> client_id INT,
+    -> total_sales INT,
+    -> PRIMARY KEY (emp_id, client_id),
+    -> FOREIGN KEY (emp_id) REFERENCES employee (emp_id) ON DELETE CASCADE,
+    -> FOREIGN KEY (cleint_id) REFERENCES client (client_id) ON DELETE CASCADE
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'INT,
+total_sales INT,
+PRIMARY KEY (emp_id, client_id),
+FOREIGN KEY (emp_id) R...' at line 3
+MariaDB [company_b]> CREATE TABLE works_with (
+    -> emp_id INT,
+    -> client_id INT,
+    -> total_sales INT,
+    -> PRIMARY KEY (emp_id, client_id),
+    -> FOREIGN KEY (emp_id) REFERENCES employee (emp_id) ON DELETE CASCADE,
+    -> FOREIGN KEY (cleint_id) REFERENCES client (client_id) ON DELETE CASCADE
+    -> );
+ERROR 1072 (42000): Key column 'cleint_id' doesn't exist in table
+MariaDB [company_b]> CREATE TABLE works_with ( emp_id INT, client_id INT, total_sales INT, PRIMARY KEY (emp_id, client_id), FOREIGN KEY (emp_id) REFERENCES employee (emp_id) ON DELETE CASCADE, FOREIGN KEY (client_id) REFERENCES client (client_id) ON DELETE CASCADE );
+Query OK, 0 rows affected (0.020 sec)
+
+MariaDB [company_b]> CREATE TABLE branch_supplier(
+    -> branch_id INT,
+    -> supplier_name VARCHAR(40),
+    -> supply_type VARCHAR(40),
+    -> PRIMARY KEY (branch_id, supplier_name),
+    -> FOREIGN KEY (branch_id) REFERENCES branch(branch_id) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (0.025 sec)
+
+MariaDB [company_b]> SHOW TABLES
+    -> ;
++---------------------+
+| Tables_in_company_b |
++---------------------+
+| branch              |
+| branch_supplier     |
+| client              |
+| employee            |
+| works_with          |
++---------------------+
+5 rows in set (0.002 sec)
+
+MariaDB [company_b]> DESCRIBE employee;
++---------------+-------------+------+-----+---------+-------+
+| Field         | Type        | Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| emp_id        | int(11)     | NO   | PRI | NULL    |       |
+| first_name    | varchar(40) | YES  |     | NULL    |       |
+| lastname      | varchar(40) | YES  |     | NULL    |       |
+| dob           | date        | YES  |     | NULL    |       |
+| sex           | varchar(1)  | YES  |     | NULL    |       |
+| salary        | int(11)     | YES  |     | NULL    |       |
+| supervisor_id | int(11)     | YES  |     | NULL    |       |
+| branch_id     | int(11)     | YES  | MUL | NULL    |       |
++---------------+-------------+------+-----+---------+-------+
+8 rows in set (0.006 sec)
+
+MariaDB [company_b]> ALTER TABLE employee
+    -> ADD FOREIGN KEY (supervisor_id) REFERENCES branch(branch_id) ON DELETE SET NULL;
+Query OK, 0 rows affected (0.019 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [company_b]> DESCRIBE employee;
++---------------+-------------+------+-----+---------+-------+
+| Field         | Type        | Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| emp_id        | int(11)     | NO   | PRI | NULL    |       |
+| first_name    | varchar(40) | YES  |     | NULL    |       |
+| lastname      | varchar(40) | YES  |     | NULL    |       |
+| dob           | date        | YES  |     | NULL    |       |
+| sex           | varchar(1)  | YES  |     | NULL    |       |
+| salary        | int(11)     | YES  |     | NULL    |       |
+| supervisor_id | int(11)     | YES  | MUL | NULL    |       |
+| branch_id     | int(11)     | YES  | MUL | NULL    |       |
++---------------+-------------+------+-----+---------+-------+
+8 rows in set (0.007 sec)
+
+MariaDB [company_b]> INSERT INTO employee VALUES (100, 'David', 'Jeggins', 2003-05-12, 'M', 12000, NULL, NULL);
+ERROR 1292 (22007): Incorrect date value: '1986' for column `company_b`.`employee`.`dob` at row 1
+MariaDB [company_b]> INSERT INTO employee VALUES (100, 'David', 'Jeggins', 2003-05-12, 'M', 12000, NULL, NULL);
+ERROR 1292 (22007): Incorrect date value: '1986' for column `company_b`.`employee`.`dob` at row 1
+MariaDB [company_b]> INSERT INTO employee VALUES (100, 'David', 'Jeggins', NULL, 'M', 12000, NULL, NULL);
+Query OK, 1 row affected (0.005 sec)
+
+MariaDB [company_b]> SELECT * FROM employees;
+ERROR 1146 (42S02): Table 'company_b.employees' doesn't exist
+MariaDB [company_b]> SELECT * FROM employee;
++--------+------------+----------+------+------+--------+---------------+-----------+
+| emp_id | first_name | lastname | dob  | sex  | salary | supervisor_id | branch_id |
++--------+------------+----------+------+------+--------+---------------+-----------+
+|    100 | David      | Jeggins  | NULL | M    |  12000 |          NULL |      NULL |
++--------+------------+----------+------+------+--------+---------------+-----------+
+1 row in set (0.004 sec)
+
+MariaDB [company_b]> DESCRIBE BRANCH;
++----------------+--------------+------+-----+---------+-------+
+| Field          | Type         | Null | Key | Default | Extra |
++----------------+--------------+------+-----+---------+-------+
+| branch_id      | int(11)      | NO   | PRI | NULL    |       |
+| branch_name    | varchar(255) | YES  |     | NULL    |       |
+| mgr_id         | int(11)      | YES  | MUL | NULL    |       |
+| mgr_start_date | date         | YES  |     | NULL    |       |
++----------------+--------------+------+-----+---------+-------+
+4 rows in set (0.013 sec)
+
+MariaDB [company_b]> INSERT INTO branch VALUES (1, 'coperate', 100, '2022-02-09');
+Query OK, 1 row affected (0.008 sec)
+
+MariaDB [company_b]> SELECTE * FROM branch;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SELECTE * FROM branch' at line 1
+MariaDB [company_b]> SELECT * FROM branch;
++-----------+-------------+--------+----------------+
+| branch_id | branch_name | mgr_id | mgr_start_date |
++-----------+-------------+--------+----------------+
+|         1 | coperate    |    100 | 2022-02-09     |
++-----------+-------------+--------+----------------+
+1 row in set (0.003 sec)
+
+MariaDB [company_b]> UPDATE employee SET branch_id = 1 WHERE emp_id = 100;
+Query OK, 1 row affected (0.014 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [company_b]> SELECTE * FROM employee
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SELECTE * FROM employee' at line 1
+MariaDB [company_b]> SELECT * FROM employee;
++--------+------------+----------+------+------+--------+---------------+-----------+
+| emp_id | first_name | lastname | dob  | sex  | salary | supervisor_id | branch_id |
++--------+------------+----------+------+------+--------+---------------+-----------+
+|    100 | David      | Jeggins  | NULL | M    |  12000 |          NULL |         1 |
++--------+------------+----------+------+------+--------+---------------+-----------+
+1 row in set (0.001 sec)
+
+MariaDB [company_b]> 
+MariaDB [company_b]> USE cleanrite
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+MariaDB [cleanrite]> SHOW TABLES;
++---------------------+
+| Tables_in_cleanrite |
++---------------------+
+| ASSIGNMENT          |
+| Cleaner             |
+| admin               |
+| cleaningsession     |
+| customer            |
++---------------------+
+5 rows in set (0.001 sec)
+
+MariaDB [cleanrite]> DESCRIBE customer;
++--------------+--------------+------+-----+---------+----------------+
+| Field        | Type         | Null | Key | Default | Extra          |
++--------------+--------------+------+-----+---------+----------------+
+| id           | int(11)      | NO   | PRI | NULL    | auto_increment |
+| user_name    | varchar(255) | NO   |     | NULL    |                |
+| last_name    | varchar(255) | NO   |     | NULL    |                |
+| first_name   | varchar(255) | NO   |     | NULL    |                |
+| email        | varchar(255) | NO   |     | NULL    |                |
+| phone_number | varchar(255) | NO   |     | NULL    |                |
+| password     | varchar(255) | NO   |     | NULL    |                |
++--------------+--------------+------+-----+---------+----------------+
+7 rows in set (0.016 sec)
+
+MariaDB [cleanrite]> ----+------+-----+---------+----------------+
+MariaDB [cleanrite]> | Field        | Type         | Null | Key | Default | Extra          |
+    -> +--------------+--------------+------+-----+---------+----------------+
+    -> | id           | int(11)      | NO   | PRI | NULL    | auto_increment |
+    -> | user_name    | varchar(255) | NO   |     | NULL    |                |
+    -> | last_name    | varchar(255) | NO   |     | NULL    |                |
+    -> | first_name   | varchar(255) | NO   |     | NULL    |                |
+    -> | email        | varchar(255) | NO   |     | NULL    |                |
+    -> | phone_number | varchar(255) | NO   |     | NULL    |                |
+    -> | password     | varchar(255) | NO   |     | NULL    |                |
+    -> +--------------+--------------+------+-----+---------+----------------+
+    -> 7 rows in set (0.016 sec)
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '| Field        | Type         | Null | Key | Default | Extra          |
++----...' at line 1
+MariaDB [cleanrite]> CREATE TABLE Service (
+    ->     service_id INT PRIMARY KEY AUTO_INCREMENT,
+    ->     service_name VARCHAR(255) NOT NULL,
+    ->     description TEXT,
+    ->     price DECIMAL(10, 2) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.073 sec)
+
+MariaDB [cleanrite]> DROP TABLE service;
+Query OK, 0 rows affected (0.016 sec)
+
+MariaDB [cleanrite]> SHOW DATABASES
+    -> ;
++--------------------+
+| Database           |
++--------------------+
+| cleanrite          |
+| company_b          |
+| information_schema |
+| mysql              |
+| performance_schema |
+| phpmyadmin         |
+| records_b          |
+| test               |
++--------------------+
+8 rows in set (0.004 sec)
+
+MariaDB [cleanrite]> SHOW TABLES;
++---------------------+
+| Tables_in_cleanrite |
++---------------------+
+| ASSIGNMENT          |
+| Cleaner             |
+| admin               |
+| cleaningsession     |
+| customer            |
++---------------------+
+5 rows in set (0.006 sec)
+
+MariaDB [cleanrite]> \T /Users/user/Desktop/school/DB_ADETUNJI/cleanrite_api/outfile2.txt

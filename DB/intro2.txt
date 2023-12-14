@@ -1,0 +1,56 @@
+MariaDB [records_b]> USE records_b
+Database changed
+MariaDB [records_b]> CREATE TABLE students(
+    -> student_id INT PRIMARY KEY,
+    -> name VARCHAR(40),
+    -> department VARCHAR(25)
+    -> );
+Query OK, 0 rows affected (0.030 sec)
+
+MariaDB [records_b]> SHOW table
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 1
+MariaDB [records_b]> SHOW tables;
++---------------------+
+| Tables_in_records_b |
++---------------------+
+| students            |
++---------------------+
+1 row in set (0.002 sec)
+
+MariaDB [records_b]> DESCRIBE students;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| student_id | int(11)     | NO   | PRI | NULL    |       |
+| name       | varchar(40) | YES  |     | NULL    |       |
+| department | varchar(25) | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+3 rows in set (0.023 sec)
+
+MariaDB [records_b]> INSERT INTO student VALUES (1, 'Princess Bill', 'Software Engineering');
+ERROR 1146 (42S02): Table 'records_b.student' doesn't exist
+MariaDB [records_b]> INSERT INTO students VALUES (1, 'Princess Bill', 'Software Engineering');
+Query OK, 1 row affected (0.011 sec)
+
+MariaDB [records_b]> RENAME TABLE students TO student
+    -> ;
+Query OK, 0 rows affected (0.018 sec)
+
+MariaDB [records_b]> INSERT INTO student VALUES (2, 'Mike Daniel', 'Computer Engineering');
+Query OK, 1 row affected (0.005 sec)
+
+MariaDB [records_b]> INSERT INTO student  VALUES (3, 'Logan Paul', 'Computer Engineering');
+Query OK, 1 row affected (0.003 sec)
+
+MariaDB [records_b]> SELECT * FROM student;
++------------+---------------+----------------------+
+| student_id | name          | department           |
++------------+---------------+----------------------+
+|          1 | Princess Bill | Software Engineering |
+|          2 | Mike Daniel   | Computer Engineering |
+|          3 | Logan Paul    | Computer Engineering |
++------------+---------------+----------------------+
+3 rows in set (0.004 sec)
+
+MariaDB [records_b]> \t
